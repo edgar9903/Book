@@ -57,6 +57,24 @@ interface RepositoryInterface
     public function whereOne(array $data);
 
     /**
+     *  Where not in record in the database.
+     *
+     * @param string $field
+     * @param array $data
+     * @return mixed
+     */
+    public function whereNotIn(string $field,array $data);
+
+
+    /**
+     *  Where like record in the database.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function whereLike(array $data);
+
+    /**
      * Sets relations for eager loading.
      *
      * @param $relations

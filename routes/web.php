@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return Redirect('/book');
 });
+
+Route::get('author/autocomplete', 'AuthorController@autocomplete');
+Route::get('book/author/{id},{author_id}', 'BookController@destroyAuthor')->name('book.remove.author');
+Route::get('author/book/{id},{book_id}', 'AuthorController@destroyBook')->name('author.remove.book');
+
 Route::resources([
     'book' => 'BookController',
     'author' => 'AuthorController',

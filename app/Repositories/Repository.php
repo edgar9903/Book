@@ -138,6 +138,21 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
+     *  Where like record in the database.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function whereLike(array $data)
+    {
+        $likes = $this->query();
+        foreach($data as $item){
+            $likes->orWhere($item['key'], 'LIKE', '%'.$item['value'].'%');
+        }
+        return $likes->get();
+    }
+
+    /**
      * Sets relations for eager loading.
      *
      * @param $relations

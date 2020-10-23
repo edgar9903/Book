@@ -2,67 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PublicationService;
+use App\Http\Requests\Book\Create;
+use App\Http\Requests\Book\Update;
+use App\Services\BookService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class BookController extends Controller
 {
-    protected $publicationService;
+    protected $bookService;
 
     /**
      *  Construct.
      *
-     * @param $publicationService
+     * @param $bookService
      * @return void
      */
     public function __construct(
-        PublicationService $publicationService
+        BookService $bookService
     )
     {
-        $this->publicationService = $publicationService;
+        $this->bookService = $bookService;
     }
 
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the book.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        $books = $this->bookService->all();
+
+        return view('book.index',compact('books'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new book.
      *
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return view('book.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created book in database.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\Book\Create  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Create $request)
     {
-        //
+
+        $data = $request->only('name','authors');
+        $book = $this->bookService->create($data);
+
+        return Redirect(route('book.show',$book->id));
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified book.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        //
+        $book = $this->bookService->find($id);
+
+        return view('book.show',compact('book'));
     }
 
     /**
@@ -73,29 +84,58 @@ class BookController extends Controller
      */
     public function edit($id)
     {
-        //
+        $book = $this->bookService->find($id);
+
+        return view('book.edit',compact('book'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified book from database.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\Book\Update  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Update $request, $id)
     {
-        //
+        $data = $request->all();
+        if($this->bookService->update($data,$id)){
+
+            return Redirect(route('book.show',$id));
+        }
+
+        return Redirect::back();
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified book from database.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+        if($this->bookService->delete($id)) {
+
+            return Redirect(route('book.index'));
+        }
+
+        return Redirect::back();
+    }
+
+
+    /**
+     * Remove the specified authors_book from database.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroyAuthor($id,$author_id)
+    {
+        if($this->bookService->deleteAuthor($id,$author_id)) {
+            return Redirect(route('book.show',$id));
+        }
+
+        return Redirect::back();
     }
 }
